@@ -1,0 +1,4 @@
+github.com/gainings/pixela-go-client v0.0.1 h1:y1NiaqcVlN1vAA10voHdf5Dz3Vemps2/g+U1IKfzMbo=
+github.com/gainings/pixela-go-client v0.0.1/go.mod h1:QDAi0BXBIzDwAl1YIrF0ug9KzGtDC3Ol+iRH56Vw/gg=
+github.com/google/go-cmp v0.3.1 h1:Xye71clBPdm5HgqGwUkwhbynsUJZhDbS20FvLhQ2izg=
+github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
