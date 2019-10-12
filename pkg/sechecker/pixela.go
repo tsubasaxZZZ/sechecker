@@ -5,9 +5,9 @@ import (
 )
 
 type PixelaConfig struct {
-	UserID  string
-	GraphID string
-	Secret  string
+	UserID  string `json:"UserID"`
+	GraphID string `json:"GraphID"`
+	Secret  string `json:"Secret"`
 }
 
 func NewPixelaClient(userID, graphID, secret string) (*PixelaConfig, error) {
