@@ -10,15 +10,16 @@ type PixelaConfig struct {
 	Secret  string `json:"Secret"`
 }
 
-func NewPixelaClient(userID, graphID, secret string) (*PixelaConfig, error) {
-	return &PixelaConfig{
+func NewPixelaClient(userID, graphID, secret string) *PixelaConfig {
+	c := &PixelaConfig{
 		UserID:  userID,
 		GraphID: graphID,
 		Secret:  secret,
-	}, nil
+	}
+	return c
 }
 
-func (api *PixelaConfig) PostEvent(metadata MetaData) error {
+func (api PixelaConfig) PostEvent(metadata MetaData) error {
 	c := pixela.NewClient(api.UserID, api.Secret)
 	err := c.IncrementPixelQuantity(api.GraphID)
 	return err

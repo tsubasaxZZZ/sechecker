@@ -14,7 +14,7 @@ func main() {
 
 	//--- 前回のイベントファイルの読み込み
 	var prevEventMetadata sechecker.MetaData
-	prevEventMetadata =	sechecker.ReadEventFile(eventFilePath)
+	prevEventMetadata = sechecker.ReadEventFile(eventFilePath)
 
 	//--- 現在発生しているイベントの取得
 	var currentEventMetadata sechecker.MetaData
@@ -62,19 +62,15 @@ func getScheduleEvent(currentEventMetadata *sechecker.MetaData) ([]byte, error) 
 func doAction(currentEventMetadata sechecker.MetaData) error {
 
 	// --- Pixelaへのポスト
-	api, err := sechecker.NewPixelaClient("tsubasaxzzz", "scheduleevent", "organza-faun-weak")
+	api := sechecker.NewPixelaClient("tsubasaxzzz", "scheduleevent", "organza-faun-weak")
+	err := api.PostEvent(currentEventMetadata)
 	if err != nil {
-		fmt.Println("Error")
-	}
-
-	err2 := api.PostEvent(currentEventMetadata)
-	if err2 != nil {
 		fmt.Println("Error")
 	}
 
 	// --- イベントファイルのコピー作成
 	date := time.Now().Format("20060102150405")
-	if err := currentEventMetadata.WriteEventFile(date+"_"+eventFilePath); err != nil {
+	if err := currentEventMetadata.WriteEventFile(date + "_" + eventFilePath); err != nil {
 		fmt.Println("Write file error")
 	}
 

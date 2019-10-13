@@ -1,6 +1,8 @@
 package sechecker_test
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -35,7 +37,6 @@ func TestWriteMetadataToMetadatafile(t *testing.T) {
 
 	if diff := cmp.Diff(m, read_m); diff != "" {
 		t.Errorf("differs: (-got +want)\n%s", diff)
-
 	}
 	os.Remove(eventJsonFile)
 
@@ -252,10 +253,7 @@ func TestPostPixela(t *testing.T) {
 			{"", "", "", []string{"", ""}, "", ""},
 		},
 	}
-	api, err := sechecker.NewPixelaClient("tsubasaxzzz", "scheduleevent", "organza-faun-weak")
-	if err != nil {
-		t.Errorf("Error")
-	}
+	api := sechecker.NewPixelaClient("tsubasaxzzz", "scheduleevent", "organza-faun-weak")
 
 	// ToDo: グラフがない時のエラー処理
 	err2 := api.PostEvent(metadata)
@@ -263,4 +261,83 @@ func TestPostPixela(t *testing.T) {
 		t.Errorf("Error")
 	}
 
+}
+func TestConfig(t *testing.T) {
+	const configPath = "hoge.json"
+
+	cases := []struct {
+		name   string
+		config sechecker.Configs
+		expect sechecker.Configs
+	}{
+		{
+			"Pixela",
+			sechecker.Configs{
+				[]sechecker.ActionConfig{
+					{"Pixela1", "Pixela", &sechecker.PixelaConfig{UserID: "tsubasaxZZZ", GraphID: "graph1", Secret: "SECRET"}},
+				},
+			},
+			sechecker.Configs{
+				[]sechecker.ActionConfig{
+					{"Pixela1", "Pixela", &sechecker.PixelaConfig{UserID: "tsubasaxZZZ", GraphID: "graph1", Secret: "SECRET"}},
+				},
+			},
+		},
+		{
+			"Non declaretion config",
+			sechecker.Configs{
+				[]sechecker.ActionConfig{
+					{"hogehoge", "Unknown", &sechecker.PixelaConfig{UserID: "tsubasaxZZZ", GraphID: "graph1", Secret: "SECRET"}},
+				},
+			},
+			sechecker.Configs{
+				[]sechecker.ActionConfig{
+					{"hogehoge", "Unknown", nil},
+				},
+			},
+		},
+	}
+	for _, c := range cases {
+		// t.Parallel()
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+
+			writeConfigJson(t, c.config, configPath)
+
+			var read_config sechecker.Configs
+			readConfigJson(t, configPath, &read_config)
+
+			if diff := cmp.Diff(c.expect, read_config); diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			}
+			// os.Remove(configPath)
+		})
+	}
+
+}
+
+func readConfigJson(t *testing.T, filepath string, c *sechecker.Configs) {
+	t.Helper()
+
+	// イベントファイルの読み込み
+	data, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		if err := json.Unmarshal(data, c); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+}
+
+func writeConfigJson(t *testing.T, m interface{}, filepath string) {
+	t.Helper()
+	data, err := json.MarshalIndent(m, "", " ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := ioutil.WriteFile(filepath, data, 0644); err != nil {
+		t.Fatal(err)
+	}
 }
