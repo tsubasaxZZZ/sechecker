@@ -1,8 +1,6 @@
 package sechecker_test
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -302,10 +300,10 @@ func TestConfig(t *testing.T) {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
 
-			writeConfigJson(t, c.config, configPath)
+			sechecker.WriteConfig(configPath, c.config)
 
 			var read_config sechecker.Configs
-			readConfigJson(t, configPath, &read_config)
+			sechecker.ReadConfig(configPath, &read_config)
 
 			if diff := cmp.Diff(c.expect, read_config); diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
@@ -314,30 +312,4 @@ func TestConfig(t *testing.T) {
 		})
 	}
 
-}
-
-func readConfigJson(t *testing.T, filepath string, c *sechecker.Configs) {
-	t.Helper()
-
-	// イベントファイルの読み込み
-	data, err := ioutil.ReadFile(filepath)
-	if err != nil {
-		t.Fatal(err)
-	} else {
-		if err := json.Unmarshal(data, c); err != nil {
-			t.Fatal(err)
-		}
-	}
-
-}
-
-func writeConfigJson(t *testing.T, m interface{}, filepath string) {
-	t.Helper()
-	data, err := json.MarshalIndent(m, "", " ")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := ioutil.WriteFile(filepath, data, 0644); err != nil {
-		t.Fatal(err)
-	}
 }

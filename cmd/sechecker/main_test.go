@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 // 前回のイベント情報と今回のイベント情報の比較テスト
 
 func TestCmd_DoAction(t *testing.T) {
@@ -27,13 +26,17 @@ func TestCmd_DoAction(t *testing.T) {
 			},
 		},
 	}
-
+	config := sechecker.Configs{
+		[]sechecker.ActionConfig{
+			{"Pixela1", "Pixela", &sechecker.PixelaConfig{UserID: "tsubasaxzzz", GraphID: "scheduleevent", Secret: "organza-faun-weak"}},
+		},
+	}
 	for _, c := range cases {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
-			t.Parallel()
-			if err := doAction(c.currentMetaData); err != nil {
-				t.Fatal("doAction is failed")
+			// t.Parallel()
+			if err := doAction(c.currentMetaData, config); err != nil {
+				t.Fatal(err)
 			}
 		})
 	}
