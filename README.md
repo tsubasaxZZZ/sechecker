@@ -23,10 +23,23 @@ https://docs.pixe.la/entry/post-graph
 ## 2. 設定ファイルの作成
 
 Pixela の設定を `config.json` に記述します。
+Type には "Pixela" を指定します。
 
 例:
 ```json
-{"UserID":"tsunomur", "GraphID":"graph1", "Secret": "secret"}
+{
+	"ActionConfig": [
+		{
+			"Name": "pixela",
+			"Type": "Pixela", <--------- ここは固定
+			"Config": {
+				"UserID": "tsunomur",
+				"GraphID": "graph1",
+				"Secret": "secret"
+			}
+		}
+	]
+}
 ```
 
 ## 3. ツールの実行
