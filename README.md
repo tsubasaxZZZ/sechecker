@@ -47,3 +47,9 @@ Type には "Pixela" を指定します。
 ```bash
 ./sechecker
 ```
+
+## 4. cron への登録例
+
+```bash
+* * * * * cd /home/tsunomur/sechecker && ./sechecker
+```
