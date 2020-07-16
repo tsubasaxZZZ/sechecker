@@ -1,6 +1,6 @@
 # これは何？
 
-Azure の Scheduled Event をチェックして、Pixela にポストするツールです。
+Azure の Scheduled Event をチェックして、任意のコマンドを実行するツールです。
 
 # コンパイル
 
