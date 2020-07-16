@@ -35,10 +35,20 @@ func TestCmd_DoAction(t *testing.T) {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
 			// t.Parallel()
-			if err := doAction(c.currentMetaData, config); err != nil {
-				t.Fatal(err)
+			if acctionCount, err := doAction(c.currentMetaData, config); err != nil || acctionCount == 0 { // エラーがある時もしくはアクションが実行されなかったとき
+				t.Fatalf("Error=%s, AcctionCount=%d", err, acctionCount)
 			}
 		})
 	}
+
+	// コンフィグファイルが空の時はアクションは実行されない
+	emptyConfig := sechecker.Configs{
+		[]sechecker.ActionConfig{},
+	}
+	t.Run("コンフィグファイルが空の時はアクション実行されない", func(t *testing.T) {
+		if acctionCount, err := doAction(cases[0].currentMetaData, emptyConfig); err != nil || acctionCount != 0 { // エラーがある時もしくはアクションが実行されたとき
+			t.Fatalf("Error=%s, AcctionCount=%d", err, acctionCount)
+		}
+	})
 
 }

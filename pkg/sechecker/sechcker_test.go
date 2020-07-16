@@ -256,7 +256,7 @@ func TestPostPixela(t *testing.T) {
 	// ToDo: グラフがない時のエラー処理
 	err2 := api.PostEvent(metadata)
 	if err2 != nil {
-		t.Errorf("Error")
+		t.Error(err2)
 	}
 
 }
@@ -308,8 +308,17 @@ func TestConfig(t *testing.T) {
 			if diff := cmp.Diff(c.expect, read_config); diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			}
-			// os.Remove(configPath)
+			os.Remove(configPath)
 		})
 	}
 
+	t.Run("コンフィグファイルがないとき", func(t *testing.T) {
+		var read_config sechecker.Configs
+		sechecker.ReadConfig(configPath, &read_config)
+
+		// 配列は0のはず
+		if len(read_config.ActionConfigs) != 0 {
+			t.Errorf("Empty config create error: %v", read_config)
+		}
+	})
 }

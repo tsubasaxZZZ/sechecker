@@ -80,7 +80,10 @@ func getScheduleEvent(currentEventMetadata *sechecker.MetaData) ([]byte, error) 
 }
 
 // アクションの実行
-func doAction(currentEventMetadata sechecker.MetaData, c sechecker.Configs) error {
+func doAction(currentEventMetadata sechecker.MetaData, c sechecker.Configs) (int, error) {
+
+	// 実行されたアクションの数
+	var acctionCount int
 
 	for _, actionConfig := range c.ActionConfigs {
 		switch v := actionConfig.Config.(type) {
@@ -92,7 +95,7 @@ func doAction(currentEventMetadata sechecker.MetaData, c sechecker.Configs) erro
 				fmt.Printf("%s", err)
 			}
 		}
-
+		acctionCount++
 	}
 
 	// --- イベントファイルのコピー作成
@@ -101,8 +104,5 @@ func doAction(currentEventMetadata sechecker.MetaData, c sechecker.Configs) erro
 		fmt.Println("Write file error")
 	}
 
-	// --- Slack へのポスト
-
-	// --- Log Analytics へのポスト
-	return nil
+	return acctionCount, nil
 }

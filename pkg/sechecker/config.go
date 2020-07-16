@@ -1,8 +1,11 @@
 package sechecker
 
-import "encoding/json"
-import "io/ioutil"
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+)
 
 type Actioner interface {
 	PostEvent(metadata MetaData) error
@@ -63,15 +66,24 @@ func (c *ActionConfig) UnmarshalJSON(b []byte) error {
 }
 
 func ReadConfig(filepath string, c *Configs) error {
+	// ファイル存在チェック
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		// ファイルが存在しない場合は空コンフィグを生成
+		c := Configs{}
+		c.ActionConfigs = []ActionConfig{}
+		WriteConfig(filepath, c)
+	}
+
 	// イベントファイルの読み込み
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return fmt.Errorf("ReadConfig io error: %s", err)
-	} else {
-		if err := json.Unmarshal(data, c); err != nil {
-			return fmt.Errorf("ReadConfig Unmarshal error: %s", err)
-		}
 	}
+
+	if err := json.Unmarshal(data, c); err != nil {
+		return fmt.Errorf("ReadConfig Unmarshal error: %s", err)
+	}
+
 	return nil
 }
 
