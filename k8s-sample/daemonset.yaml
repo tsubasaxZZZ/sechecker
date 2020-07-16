@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sechecker
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      name: sechecker
+  template:
+    metadata:
+      labels:
+        name: sechecker
+    spec:
+      containers:
+      - name: sechecker
+        image: tsubasaxzzz/sechecker
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+          - mountPath: /sechecker/config.json
+            name: sechecker-config-vol
+            subPath: config.json
+      volumes:
+        - name: sechecker-config-vol
+          configMap:
+              name: sechecker-config
+              items:
+                - key: config.json
+                  path: config.json
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sechecker-config
+data:
+  config.json: |
+    {
+      "command": [
+         "curl -X PUT https://pixe.la/v1/users/tsunomurtest/graphs/test-graph/increment -H 'X-USER-TOKEN:thisissecret' -H 'Content-Length:0'"
+     ]
+    }
