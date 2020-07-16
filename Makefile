@@ -14,6 +14,8 @@ build: ## go build
 
 .PHONY: test
 test: ## go test
+	curl -X POST https://pixe.la/v1/users -d '{"token":"thisissecret", "username":"tsunomurtest", "agreeTermsOfService":"yes", "notMinor":"yes"}'
+	curl -X POST https://pixe.la/v1/users/tsunomurtest/graphs -H 'X-USER-TOKEN:thisissecret' -d '{"id":"test-graph","name":"graph-name","unit":"commit","type":"int","color":"shibafu"}'
 	go test -v -cover ./pkg/${BINARYNAME}
 	go test -v -cover cmd/${BINARYNAME}/main_test.go cmd/${BINARYNAME}/main.go
 

@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"sechecker/pkg/sechecker"
+	"strings"
 	"time"
 )
 
@@ -29,7 +33,7 @@ func main() {
 func run() error {
 
 	// 設定ファイルの読み込み
-	var config sechecker.Configs
+	var config sechecker.Config
 	if err := sechecker.ReadConfig(configFilePath, &config); err != nil {
 		return err
 	}
@@ -47,6 +51,7 @@ func run() error {
 
 	//--- 前回のイベントと現在発生しているイベントの比較
 	eventState := sechecker.DiffEvent(prevEventMetadata, currentEventMetadata)
+	log.Printf("EventState=%d\n", eventState)
 
 	if eventState == sechecker.StateNew {
 		// アクションの実行
@@ -80,21 +85,22 @@ func getScheduleEvent(currentEventMetadata *sechecker.MetaData) ([]byte, error) 
 }
 
 // アクションの実行
-func doAction(currentEventMetadata sechecker.MetaData, c sechecker.Configs) (int, error) {
+func doAction(currentEventMetadata sechecker.MetaData, c sechecker.Config) (int, error) {
 
 	// 実行されたアクションの数
 	var acctionCount int
 
-	for _, actionConfig := range c.ActionConfigs {
-		switch v := actionConfig.Config.(type) {
-		case *sechecker.PixelaConfig:
-			api := sechecker.NewPixelaClient(v.UserID, v.GraphID, v.Secret)
-			err := api.PostEvent(currentEventMetadata)
-			if err != nil {
-				// エラーになっても次のアクションを実行
-				fmt.Printf("%s", err)
-			}
+	for _, command := range c.Commands {
+		log.Println(command)
+		cmd := exec.Command("sh", "-c", command)
+		var stdout, stderr bytes.Buffer
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
+		if err := cmd.Run(); err != nil {
+			log.Printf("%s:%s", strings.TrimRight(strings.TrimRight(stderr.String(), "\n"), "\n"), err)
+			continue
 		}
+		log.Println(stdout.String())
 		acctionCount++
 	}
 

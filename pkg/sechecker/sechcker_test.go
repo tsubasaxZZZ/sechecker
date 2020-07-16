@@ -243,55 +243,22 @@ func TestEventDiff(t *testing.T) {
 	}
 
 }
-func TestPostPixela(t *testing.T) {
-	metadata := sechecker.MetaData{
-		sechecker.StateClosed,
-		0,
-		[]sechecker.ScheduleEvent{
-			{"", "", "", []string{"", ""}, "", ""},
-		},
-	}
-	api := sechecker.NewPixelaClient("tsubasaxzzz", "scheduleevent", "organza-faun-weak")
 
-	// ToDo: グラフがない時のエラー処理
-	err2 := api.PostEvent(metadata)
-	if err2 != nil {
-		t.Error(err2)
-	}
-
-}
 func TestConfig(t *testing.T) {
 	const configPath = "hoge.json"
 
 	cases := []struct {
 		name   string
-		config sechecker.Configs
-		expect sechecker.Configs
+		config sechecker.Config
+		expect sechecker.Config
 	}{
 		{
 			"Pixela",
-			sechecker.Configs{
-				[]sechecker.ActionConfig{
-					{"Pixela1", "Pixela", &sechecker.PixelaConfig{UserID: "tsubasaxZZZ", GraphID: "graph1", Secret: "SECRET"}},
-				},
+			sechecker.Config{
+				[]string{"curl -X PUT https://pixe.la/v1/users/tsubasaxzzz/graphs/scheduleevent/increment -H 'X-USER-TOKEN:organza-faun-weak' -H 'Content-Length:0'"},
 			},
-			sechecker.Configs{
-				[]sechecker.ActionConfig{
-					{"Pixela1", "Pixela", &sechecker.PixelaConfig{UserID: "tsubasaxZZZ", GraphID: "graph1", Secret: "SECRET"}},
-				},
-			},
-		},
-		{
-			"Non declaretion config",
-			sechecker.Configs{
-				[]sechecker.ActionConfig{
-					{"hogehoge", "Unknown", &sechecker.PixelaConfig{UserID: "tsubasaxZZZ", GraphID: "graph1", Secret: "SECRET"}},
-				},
-			},
-			sechecker.Configs{
-				[]sechecker.ActionConfig{
-					{"hogehoge", "Unknown", nil},
-				},
+			sechecker.Config{
+				[]string{"curl -X PUT https://pixe.la/v1/users/tsubasaxzzz/graphs/scheduleevent/increment -H 'X-USER-TOKEN:organza-faun-weak' -H 'Content-Length:0'"},
 			},
 		},
 	}
@@ -302,7 +269,7 @@ func TestConfig(t *testing.T) {
 
 			sechecker.WriteConfig(configPath, c.config)
 
-			var read_config sechecker.Configs
+			var read_config sechecker.Config
 			sechecker.ReadConfig(configPath, &read_config)
 
 			if diff := cmp.Diff(c.expect, read_config); diff != "" {
@@ -313,11 +280,11 @@ func TestConfig(t *testing.T) {
 	}
 
 	t.Run("コンフィグファイルがないとき", func(t *testing.T) {
-		var read_config sechecker.Configs
+		var read_config sechecker.Config
 		sechecker.ReadConfig(configPath, &read_config)
 
 		// 配列は0のはず
-		if len(read_config.ActionConfigs) != 0 {
+		if len(read_config.Commands) != 0 {
 			t.Errorf("Empty config create error: %v", read_config)
 		}
 	})

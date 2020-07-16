@@ -26,10 +26,8 @@ func TestCmd_DoAction(t *testing.T) {
 			},
 		},
 	}
-	config := sechecker.Configs{
-		[]sechecker.ActionConfig{
-			{"Pixela1", "Pixela", &sechecker.PixelaConfig{UserID: "tsubasaxzzz", GraphID: "scheduleevent", Secret: "organza-faun-weak"}},
-		},
+	config := sechecker.Config{
+		[]string{"curl -X PUT https://pixe.la/v1/users/tsunomurtest/graphs/test-graph/increment -H 'X-USER-TOKEN:thisissecret' -H 'Content-Length:0'"},
 	}
 	for _, c := range cases {
 		c := c
@@ -42,8 +40,8 @@ func TestCmd_DoAction(t *testing.T) {
 	}
 
 	// コンフィグファイルが空の時はアクションは実行されない
-	emptyConfig := sechecker.Configs{
-		[]sechecker.ActionConfig{},
+	emptyConfig := sechecker.Config{
+		[]string{},
 	}
 	t.Run("コンフィグファイルが空の時はアクション実行されない", func(t *testing.T) {
 		if acctionCount, err := doAction(cases[0].currentMetaData, emptyConfig); err != nil || acctionCount != 0 { // エラーがある時もしくはアクションが実行されたとき

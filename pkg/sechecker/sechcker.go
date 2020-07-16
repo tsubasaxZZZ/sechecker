@@ -82,7 +82,7 @@ func (api *ScheduleEventAPI) Run(metadata *MetaData) ([]byte, error) {
 	return jsonBytes, nil
 }
 
-func ReadEventFile(filepath string) MetaData{
+func ReadEventFile(filepath string) MetaData {
 	var metadata MetaData
 	// 比較をするためにゼロ値を nil ではなく空配列にする
 	metadata.Events = []ScheduleEvent{}
@@ -120,6 +120,7 @@ func DiffEvent(prevEventMetadata MetaData, currentEventMetadata MetaData) EventS
 		eventState = StateClosed
 	case len(prevEventMetadata.Events) > 0 && len(currentEventMetadata.Events) == 0:
 		// ex) 1 -> 0, 3 -> 0
+		eventState = StateClosed
 	case eventDiff < 0:
 		// ex) 0 -> 1, 1 -> 3
 		eventState = StateNew
