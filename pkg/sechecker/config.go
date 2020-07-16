@@ -16,6 +16,7 @@ func ReadConfig(filepath string, c *Config) error {
 	if _, err := os.Stat(filepath); os.IsNotExist(err) {
 		// ファイルが存在しない場合は空コンフィグを生成
 		c := Config{}
+		c.Commands = []string{}
 		WriteConfig(filepath, c)
 	}
 
